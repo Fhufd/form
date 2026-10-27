@@ -1,0 +1,347 @@
+a<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BookVerse | Interactive Book Library</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f5fc;--card:#fff;--text:#24213d;--muted:#77758e;--primary:#6544d4;--primary2:#4325a8;--line:#e7e3f4;--soft:#f0edff;--shadow:0 12px 35px #30205c12}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,Arial,sans-serif;background:var(--bg);color:var(--text);transition:background .25s,color .25s;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0;transition:.2s}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #b7a6ff;outline-offset:2px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px clamp(18px,6vw,85px);color:#fff;background:linear-gradient(120deg,#21134f,#6544d4 70%,#8e71f0)}
+.logo{font-size:27px;font-weight:800;letter-spacing:-.7px}.logo span{color:#ffd27a}.tagline{font-size:13px;opacity:.9}
+.hero{position:relative;overflow:hidden;text-align:center;padding:62px 18px 52px;background:linear-gradient(135deg,#eae4ff,#fff0e7)}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;pointer-events:none;background:#fff8;width:180px;height:180px;top:-90px;left:5%}
+.hero:after{width:240px;height:240px;top:auto;left:auto;right:3%;bottom:-150px}
+.hero-content{position:relative;z-index:1}
+.eyebrow{display:inline-block;background:#fff9;color:#6544d4;padding:7px 13px;border-radius:30px;font-size:12px;font-weight:700;margin-bottom:15px}
+.hero h1{font-size:clamp(30px,5vw,51px);line-height:1.2;margin-bottom:13px;letter-spacing:-1.3px}.hero h1 span{color:var(--primary)}
+.hero p{color:#65617b;margin:0 auto 25px;max-width:610px;font-size:14px}
+.primary-btn{background:var(--primary);color:#fff;padding:13px 23px;border-radius:30px;font-weight:700;box-shadow:0 8px 20px #6544d444}.primary-btn:hover{background:var(--primary2);transform:translateY(-2px)}.primary-btn:disabled{opacity:.65;cursor:wait;transform:none}
+.stats{display:flex;justify-content:center;gap:35px;flex-wrap:wrap;margin-top:27px;color:#5f587b;font-size:12px}.stats strong{display:block;color:#3b2b79;font-size:19px}
+main{width:min(1240px,100%);margin:auto;padding:32px 22px 60px}
+.toolbar{display:grid;grid-template-columns:minmax(190px,1fr) 150px 150px 180px auto auto;gap:10px;margin-bottom:24px}
+.toolbar input,.toolbar select{width:100%;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);outline:none}
+.toolbar input:focus,.toolbar select:focus{border-color:var(--primary)}
+.tool-btn{padding:11px 14px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);font-weight:600;white-space:nowrap}.tool-btn:hover{border-color:var(--primary);color:var(--primary)}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}.section-head h2{font-size:23px}.count{font-size:12px;color:var(--primary);font-weight:700;background:var(--soft);padding:7px 11px;border-radius:20px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 24px}.chip{background:var(--card);color:var(--muted);border:1px solid var(--line);border-radius:22px;padding:8px 14px;font-size:12px;font-weight:600}.chip.active,.chip:hover{background:var(--primary);color:white;border-color:var(--primary)}
+.message{display:none;text-align:center;padding:25px 15px;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:15px;margin-bottom:20px}.message.show{display:block}.message strong{display:block;color:var(--text);margin-bottom:5px}
+.book-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.book-card{position:relative;background:var(--card);border:1px solid #ded9ef66;border-radius:18px;overflow:hidden;box-shadow:var(--shadow);animation:rise .4s both;transition:transform .25s,box-shadow .25s}
+.book-card:hover{transform:translateY(-7px);box-shadow:0 18px 38px #30205c20}
+.cover{height:205px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(135deg,#ded6ff,#fce7db);position:relative}
+.cover img{height:100%;max-width:100%;object-fit:contain;transition:transform .3s}.book-card:hover .cover img{transform:scale(1.04)}
+.cover-fallback{font-size:68px;filter:drop-shadow(0 8px 8px #0002)}
+.fav-btn{position:absolute;right:11px;top:11px;width:38px;height:38px;border-radius:50%;background:#ffffffed;color:#d84369;font-size:20px;box-shadow:0 3px 12px #0002;z-index:2}.fav-btn.active{background:#ffe0e9;transform:scale(1.08)}
+.book-info{padding:16px}.source-label{display:inline-block;background:#e6f7ed;color:#187747;padding:4px 8px;border-radius:20px;font-size:9px;font-weight:700;margin:0 0 8px 5px}.source-label.demo{background:#fff0d9;color:#925500}.genre{display:inline-block;background:var(--soft);color:var(--primary);padding:5px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:capitalize;margin-bottom:10px}
+.book-info h3{font-size:15px;line-height:1.5;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:45px}
+.author{font-size:12px;color:var(--muted);margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:35px}.year{font-size:11px;color:var(--muted);margin-bottom:14px}
+.card-actions{display:flex;gap:8px}.details-btn{flex:1;background:var(--soft);color:var(--primary);padding:10px 8px;border-radius:10px;font-size:12px;font-weight:700}.details-btn:hover{background:var(--primary);color:#fff}.open-btn{background:#f3f1f9;color:#4f486b;padding:10px 12px;border-radius:10px;font-size:12px;font-weight:700}.open-btn:hover{background:#e5defc}
+.skeleton{height:340px;border-radius:18px;background:linear-gradient(100deg,#eeeaf8 30%,#faf9ff 50%,#eeeaf8 70%);background-size:200% 100%;animation:shimmer 1.2s infinite}
+.empty{grid-column:1/-1;text-align:center;padding:55px 20px;background:var(--card);border-radius:18px;color:var(--muted)}.empty div{font-size:44px;margin-bottom:10px}
+footer{text-align:center;background:#21144e;color:#ded8ff;padding:25px;font-size:12px}
+.modal-backdrop{display:none;position:fixed;inset:0;background:#100a27a8;z-index:10;padding:20px;align-items:center;justify-content:center}.modal-backdrop.open{display:flex}
+.modal{width:min(520px,100%);max-height:90vh;overflow:auto;background:var(--card);color:var(--text);border-radius:22px;padding:25px;position:relative;box-shadow:0 20px 70px #0004;animation:rise .2s both}
+.modal-close{position:absolute;right:15px;top:13px;width:35px;height:35px;border-radius:50%;background:var(--soft);color:var(--text);font-size:20px}.modal-cover{height:180px;text-align:center;margin:5px 0 17px}.modal-cover img{height:100%;max-width:100%;object-fit:contain}.modal h2{font-size:22px;margin-bottom:8px;padding-right:25px}.modal p{color:var(--muted);font-size:13px;line-height:1.8;margin:8px 0}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#21144e;color:#fff;padding:12px 18px;border-radius:30px;box-shadow:var(--shadow);font-size:13px;z-index:20;transition:.25s}.toast.show{opacity:1;transform:translate(-50%,0)}
+body.dark-mode{--bg:#151526;--card:#24243a;--text:#f5f3ff;--muted:#c0bdd7;--line:#41405b;--soft:#383054;--shadow:0 12px 35px #0002}
+body.dark-mode .hero{background:linear-gradient(135deg,#272044,#3a2442)}body.dark-mode .hero p{color:#d0c9e8}body.dark-mode .stats{color:#d0c9e8}body.dark-mode .stats strong{color:#fff}body.dark-mode .cover{background:linear-gradient(135deg,#3b315a,#574044)}body.dark-mode .open-btn{background:#39364e;color:#eee}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{to{background-position:-200% 0}}
+@media(max-width:1050px){.toolbar{grid-template-columns:1fr 1fr 1fr}.book-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){header{padding:17px 20px}.tagline{display:none}.toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}.book-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero{padding:45px 16px}.stats{gap:20px}}
+@media(max-width:430px){main{padding:24px 12px 45px}.book-grid{gap:12px}.cover{height:160px}.book-info{padding:12px}.book-info h3{font-size:13px}.card-actions{flex-direction:column}.section-head h2{font-size:20px}.tool-btn{font-size:11px;padding:10px 7px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">📚 Book<span>Verse</span></div>
+  <div class="tagline">Find a story. Find yourself.</div>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="eyebrow">YOUR PERSONAL BOOK DISCOVERY SPACE</div>
+    <h1>Discover Your Next <span>Great Read</span></h1>
+    <p>Explore real Open Library records alongside clearly labelled hypothetical demo recommendations.</p>
+    <button class="primary-btn" id="loadBooks">✨ Discover Books</button>
+    <div class="stats">
+      <div><strong id="totalStat">—</strong>Books loaded</div>
+      <div><strong id="wishStat">0</strong>Wishlist items</div>
+      <div><strong>∞</strong>Stories to explore</div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="toolbar">
+    <input id="searchBook" type="search" placeholder="🔍 Search title or author..." aria-label="Search books">
+    <select id="category" aria-label="Filter by category">
+      <option value="all">All categories</option><option value="fiction">Fiction</option><option value="technology">Technology</option><option value="science">Science</option><option value="fantasy">Fantasy</option><option value="mystery">Mystery</option><option value="business">Business</option>
+    </select>
+    <select id="sortBooks" aria-label="Sort books">
+      <option value="default">Sort: Relevance</option><option value="title">Title: A–Z</option><option value="year">Newest first</option><option value="oldest">Oldest first</option>
+    </select>
+    <select id="apiSource" aria-label="Choose API source">
+      <option value="both">Both APIs</option>
+      <option value="real">Real API only</option>
+      <option value="hypothetical">Hypothetical API only</option>
+    </select>
+    <button id="wishlistFilter" class="tool-btn">❤️ Wishlist <span id="wishButtonCount">0</span></button>
+    <button id="themeToggle" class="tool-btn">🌙 Dark mode</button>
+  </div>
+
+  <div class="chips" aria-label="Quick searches">
+    <button class="chip active" data-query="">✨ All books</button>
+    <button class="chip" data-query="science fiction">🚀 Sci-fi</button>
+    <button class="chip" data-query="programming">💻 Coding</button>
+    <button class="chip" data-query="mystery">🕵️ Mystery</button>
+    <button class="chip" data-query="personal finance">💰 Finance</button>
+    <button class="chip" data-query="fantasy">🐉 Fantasy</button>
+  </div>
+
+  <div class="section-head"><h2 id="sectionTitle">Explore Books</h2><span class="count" id="bookCount">Ready to explore</span></div>
+  <div class="message show" id="message"><strong>Ready when you are!</strong>Choose Real API, Hypothetical API, or Both APIs, then click Discover Books.</div>
+  <div class="book-grid" id="bookList"></div>
+</main>
+
+<footer>© 2026 BookVerse Library · HTML · CSS · JavaScript · jQuery AJAX</footer>
+
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Close details">×</button>
+    <div class="modal-cover" id="modalCover">📖</div>
+    <h2 id="modalTitle">Book title</h2>
+    <p id="modalAuthor"></p><p id="modalYear"></p><p id="modalSubjects"></p>
+    <button class="primary-btn" id="modalOpen">Find book online ↗</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+$(function(){
+  let allBooks = [];
+  let wishlist = new Set();
+  let showWishlist = false;
+  let currentQuery = "";
+  let lastFocused = null;
+  let toastTimer;
+
+  const $message = $("#message");
+  const $bookList = $("#bookList");
+
+  function escapeHTML(value){
+    return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+  function categoryOf(book){
+    const text = ((book.subject || []).join(" ") + " " + (book.title || "")).toLowerCase();
+    if(/programming|computer|software|technology|coding|javascript|python/.test(text)) return "technology";
+    if(/physics|biology|chemistry|astronomy|science/.test(text)) return "science";
+    if(/fantasy|magic|dragon|wizard|myth/.test(text)) return "fantasy";
+    if(/mystery|detective|crime|sherlock|murder/.test(text)) return "mystery";
+    if(/business|finance|money|management|investing|wealth/.test(text)) return "business";
+    return "fiction";
+  }
+  function notify(text){
+    clearTimeout(toastTimer);
+    $("#toast").text(text).addClass("show");
+    toastTimer=setTimeout(()=>$("#toast").removeClass("show"),2200);
+  }
+  function updateWishlistCounters(){
+    $("#wishStat").text(wishlist.size);
+    $("#wishButtonCount").text(wishlist.size);
+    $("#wishlistFilter").toggleClass("active",showWishlist);
+  }
+  function showMessage(title, detail){
+    $message.html("<strong>"+escapeHTML(title)+"</strong>"+escapeHTML(detail)).addClass("show");
+  }
+  function skeletons(){
+    $message.removeClass("show");
+    $bookList.html(Array.from({length:8},()=>'<div class="skeleton"></div>').join(""));
+  }
+  function renderBooks(){
+    const search=$("#searchBook").val().trim().toLowerCase();
+    const category=$("#category").val();
+    const sort=$("#sortBooks").val();
+    let filtered=allBooks.filter(book=>{
+      const title=(book.title||"").toLowerCase();
+      const authors=(book.author_name||[]).join(" ").toLowerCase();
+      const matchesSearch=title.includes(search)||authors.includes(search);
+      const matchesCategory=category==="all"||categoryOf(book)===category;
+      const matchesWish=!showWishlist||wishlist.has(book.key);
+      return matchesSearch&&matchesCategory&&matchesWish;
+    });
+    if(sort==="title") filtered.sort((a,b)=>(a.title||"").localeCompare(b.title||""));
+    if(sort==="year") filtered.sort((a,b)=>(b.first_publish_year||0)-(a.first_publish_year||0));
+    if(sort==="oldest") filtered.sort((a,b)=>(a.first_publish_year||9999)-(b.first_publish_year||9999));
+    $("#bookCount").text(filtered.length+" book"+(filtered.length===1?"":"s"));
+    $("#totalStat").text(allBooks.length);
+    $("#sectionTitle").text(showWishlist?"Your Wishlist":"Explore Books");
+    updateWishlistCounters();
+    if(!filtered.length){
+      $bookList.empty();
+      if(!allBooks.length) showMessage("No books loaded yet","Click Discover Books to fetch real book records.");
+      else if(showWishlist&&wishlist.size===0) showMessage("Your wishlist is empty","Tap the heart on any book card to save it here.");
+      else showMessage("No books found","Try a different search term or category.");
+      return;
+    }
+    $message.removeClass("show");
+    $bookList.html(filtered.map((book,index)=>{
+      const title=escapeHTML(book.title||"Untitled book");
+      const authors=escapeHTML((book.author_name||["Unknown author"]).slice(0,3).join(", "));
+      const year=escapeHTML(book.first_publish_year||"Year unavailable");
+      const categoryName=escapeHTML(categoryOf(book));
+      const sourceLabel=book.source==="Hypothetical API" ? '<span class="source-label demo">Hypothetical API · Demo</span>' : '<span class="source-label">Real API</span>';
+      const cover=book.cover_i?"https://covers.openlibrary.org/b/id/"+encodeURIComponent(book.cover_i)+"-M.jpg":"";
+      const safeKey=escapeHTML(book.key||"");
+      return `<article class="book-card" style="animation-delay:${Math.min(index%12,10)*35}ms">
+        <button class="fav-btn ${wishlist.has(book.key)?"active":""}" data-key="${safeKey}" aria-label="${wishlist.has(book.key)?"Remove from":"Add to"} wishlist" title="Toggle wishlist">${wishlist.has(book.key)?"♥":"♡"}</button>
+        <div class="cover">${cover?`<img src="${cover}" alt="Cover of ${title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">`:""}<span class="cover-fallback" ${cover?'style="display:none"':""}>📖</span></div>
+        <div class="book-info"><span class="genre">${categoryName}</span>${sourceLabel}<h3>${title}</h3>
+        <p class="author">✍️ ${authors}</p><p class="year">📅 First published: ${year}</p>
+        <div class="card-actions"><button class="details-btn" data-key="${safeKey}">Book details</button><button class="open-btn" data-key="${safeKey}">Explore ↗</button></div></div>
+      </article>`;
+    }).join(""));
+  }
+  // HYPOTHETICAL API: simulated locally for demonstration; not a live external service.
+  const hypotheticalBooks = [
+    {key:"demo/1",title:"JavaScript Made Simple",author_name:["A. Kumar"],first_publish_year:2024,subject:["programming","technology"],source:"Hypothetical API",demoRating:4.8,demoAvailability:"Available"},
+    {key:"demo/2",title:"The Future of Artificial Intelligence",author_name:["M. Sharma"],first_publish_year:2025,subject:["science","technology","artificial intelligence"],source:"Hypothetical API",demoRating:4.7,demoAvailability:"Available"},
+    {key:"demo/3",title:"Mystery at Moonlight Manor",author_name:["R. Patel"],first_publish_year:2023,subject:["mystery","crime","fiction"],source:"Hypothetical API",demoRating:4.4,demoAvailability:"Limited"},
+    {key:"demo/4",title:"Dragons of the Crystal Kingdom",author_name:["S. Rao"],first_publish_year:2022,subject:["fantasy","magic","fiction"],source:"Hypothetical API",demoRating:4.6,demoAvailability:"Available"},
+    {key:"demo/5",title:"Personal Finance for Beginners",author_name:["N. Iyer"],first_publish_year:2025,subject:["business","finance","money"],source:"Hypothetical API",demoRating:4.5,demoAvailability:"Available"},
+    {key:"demo/6",title:"The Little Book of Big Ideas",author_name:["P. Wilson"],first_publish_year:2021,subject:["fiction","personal development"],source:"Hypothetical API",demoRating:4.2,demoAvailability:"Out of stock"},
+    {key:"demo/7",title:"Python Projects for Students",author_name:["K. Verma"],first_publish_year:2024,subject:["programming","python","technology"],source:"Hypothetical API",demoRating:4.9,demoAvailability:"Available"},
+    {key:"demo/8",title:"Secrets of the Deep Ocean",author_name:["L. Thomas"],first_publish_year:2020,subject:["science","biology"],source:"Hypothetical API",demoRating:4.3,demoAvailability:"Available"}
+  ];
+
+  // Mimics an API response shape: { docs: [...] }.
+  function hypotheticalBookAPI(query){
+    const q=(query||"").toLowerCase();
+    const docs=hypotheticalBooks.filter(book=>{
+      const text=(book.title+" "+book.author_name.join(" ")+" "+book.subject.join(" ")).toLowerCase();
+      return !q || q==="bestsellers" || text.includes(q) || q.split(/\\s+/).some(word=>word.length>3&&text.includes(word));
+    });
+    return $.Deferred().resolve({docs:docs}).promise();
+  }
+
+  function fetchBooks(query){
+    currentQuery=query||"bestsellers";
+    const mode=$("#apiSource").val()||"both";
+    $("#loadBooks").prop("disabled",true).text("⏳ Loading...");
+    skeletons();
+
+    const realRequest = () => $.ajax({
+      url:"https://openlibrary.org/search.json",
+      method:"GET",
+      dataType:"json",
+      data:{q:currentQuery,fields:"key,title,author_name,first_publish_year,cover_i,subject",limit:32}
+    });
+    const hypotheticalRequest = () => hypotheticalBookAPI(currentQuery);
+    const realPromise = mode==="hypothetical" ? $.Deferred().resolve({docs:[]}).promise() : realRequest();
+    const demoPromise = mode==="real" ? $.Deferred().resolve({docs:[]}).promise() : hypotheticalRequest();
+
+    $.when(realPromise,demoPromise).done(function(realData,demoData){
+      const realPayload=Array.isArray(realData)?realData[0]:realData;
+      const demoPayload=Array.isArray(demoData)?demoData[0]:demoData;
+      const realDocs=(realPayload.docs||[]).map(book=>({...book,source:"Real API"}));
+      const demoDocs=(demoPayload.docs||[]).map(book=>({...book,source:"Hypothetical API"}));
+      const unique=new Map();
+      [...realDocs,...demoDocs].forEach(book=>{if(book.key&&!unique.has(book.key))unique.set(book.key,book);});
+      allBooks=Array.from(unique.values());
+      showWishlist=false;
+      $("#wishlistFilter").removeClass("active");
+      if(allBooks.length)renderBooks();
+      else showMessage("No results found","Try another search term or choose a different API source.");
+    }).fail(function(){
+      if(mode!=="real"){
+        hypotheticalRequest().done(function(data){
+          allBooks=(data.docs||[]).map(book=>({...book,source:"Hypothetical API"}));
+          if(allBooks.length)renderBooks();
+          else showMessage("No results found","Try another search term.");
+        }).fail(function(){
+          $bookList.empty();showMessage("Unable to load books","Check your internet connection and try again.");
+        });
+      } else {
+        $bookList.empty();
+        showMessage("Real API unavailable","Check your internet connection or select Hypothetical API only.");
+      }
+    }).always(function(){
+      $("#loadBooks").prop("disabled",false).text("✨ Discover Books");
+    });
+  }
+
+  $("#loadBooks").on("click",()=>fetchBooks(currentQuery||"bestsellers"));
+  $("#searchBook").on("input",function(){
+    if(!allBooks.length)return;
+    showWishlist=false;
+    renderBooks();
+  });
+  $("#category,#sortBooks").on("change",renderBooks);
+  $("#apiSource").on("change",function(){fetchBooks(currentQuery||"bestsellers");});
+  $("#wishlistFilter").on("click",function(){
+    showWishlist=!showWishlist;
+    renderBooks();
+    if(showWishlist) notify("Showing your saved books ❤️");
+  });
+  $("#themeToggle").on("click",function(){
+    const dark=$("body").toggleClass("dark-mode").hasClass("dark-mode");
+    $(this).text(dark?"☀️ Light mode":"🌙 Dark mode");
+  });
+  $(".chip").on("click",function(){
+    $(".chip").removeClass("active");
+    $(this).addClass("active");
+    const query=$(this).data("query");
+    $("#searchBook").val("");
+    $("#category").val("all");
+    showWishlist=false;
+    fetchBooks(query||"bestsellers");
+  });
+  $bookList.on("click",".fav-btn",function(){
+    const key=$(this).data("key");
+    if(wishlist.has(key)){wishlist.delete(key);notify("Removed from wishlist");}
+    else{wishlist.add(key);notify("Added to wishlist ❤️");}
+    renderBooks();
+  });
+  function openDetails(key){
+    const book=allBooks.find(item=>item.key===key);
+    if(!book)return;
+    lastFocused=document.activeElement;
+    const cover=book.cover_i?"https://covers.openlibrary.org/b/id/"+encodeURIComponent(book.cover_i)+"-L.jpg":"";
+    $("#modalCover").html(cover?`<img src="${cover}" alt="Book cover" onerror="this.style.display='none'">`:"📖");
+    $("#modalTitle").text(book.title||"Untitled book");
+    $("#modalAuthor").text("✍️ Author(s): "+((book.author_name||[]).join(", ")||"Unknown"));
+    $("#modalYear").text("📅 First published: "+(book.first_publish_year||"Not available"));
+    $("#modalSubjects").text("🏷️ Subjects: "+((book.subject||[]).slice(0,8).join(", ")||"No subjects listed")+
+      (book.source==="Hypothetical API" ? " · DEMO DATA — Rating: "+book.demoRating+"/5 · Availability: "+book.demoAvailability : ""));
+    $("#modalAuthor").text("✍️ Author(s): "+((book.author_name||[]).join(", ")||"Unknown")+" · Source: "+(book.source||"Real API"));
+    $("#modalOpen").data("title",book.title||"");
+    $("#modalBackdrop").addClass("open");
+    $("#modalClose").trigger("focus");
+  }
+  $bookList.on("click",".details-btn",function(){openDetails($(this).data("key"));});
+  $bookList.on("click",".open-btn",function(){
+    const book=allBooks.find(item=>item.key===$(this).data("key"));
+    if(book)window.open("https://openlibrary.org"+book.key,"_blank","noopener,noreferrer");
+  });
+  function closeModal(){
+    $("#modalBackdrop").removeClass("open");
+    if(lastFocused)lastFocused.focus();
+  }
+  $("#modalClose").on("click",closeModal);
+  $("#modalBackdrop").on("click",function(e){if(e.target===this)closeModal();});
+  $(document).on("keydown",function(e){if(e.key==="Escape")closeModal();});
+  $("#modalOpen").on("click",function(){
+    const title=$(this).data("title");
+    window.open("https://openlibrary.org/search?q="+encodeURIComponent(title),"_blank","noopener,noreferrer");
+  });
+  updateWishlistCounters();
+});
+</script>
+</body>
+</html>
